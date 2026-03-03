@@ -1,6 +1,6 @@
 import express from "express";
 import * as dotenv from "dotenv";
-import OpenAI from "openai"; 
+import OpenAI from "openai";
 
 dotenv.config();
 
@@ -16,16 +16,29 @@ router.route("/").get((req, res) => {
 
 router.route("/").post(async (req, res) => {
   try {
-    const { prompt } = req.body;
+    const prompt = req.body?.prompt?.trim();
+    if (!prompt) {
+      return res.status(400).json({ message: "Prompt is required" });
+    }
 
-    const response = await openai.images.generate({
-      prompt,
-      n: 1,
-      size: "1024x1024",
-      response_format: "b64_json",
-    });
+    const response = await Promise.race([
+      openai.images.generate({
+        prompt,
+        n: 1,
+        size: "1024x1024",
+        response_format: "b64_json",
+      }),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("OpenAI request timed out")), 15000),
+      ),
+    ]);
 
-    const image = response.data[0].b64_json; 
+    const image = response?.data?.[0]?.b64_json;
+    if (!image) {
+      return res
+        .status(502)
+        .json({ message: "No image returned from upstream" });
+    }
 
     res.status(200).json({ photo: image });
   } catch (error) {
