@@ -6,9 +6,12 @@ dotenv.config();
 
 const router = express.Router();
 
-const openai = new OpenAI({
-  apiKey: process.env.DALLE_API_KEY,
-});
+const apiKey = process.env.DALLE_API_KEY;
+if (!apiKey) {
+  throw new Error("DALLE_API_KEY is not set");
+}
+
+const openai = new OpenAI({ apiKey });
 
 router.route("/").get((req, res) => {
   res.status(200).json({ message: "Hello from DALL.E Routes!" });
