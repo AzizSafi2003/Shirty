@@ -95,8 +95,16 @@ const Customizer = () => {
   };
 
   const handleSubmit = async (type) => {
-    if (!prompt.trim()) return;
-    /* TODO: wire AI generation flow and call handleDecals(type, result) */
+    if (!prompt.trim()) return alert("Please enter a prompt");
+
+    try {
+      // call backend to generate an ai image
+    } catch (error) {
+      alert(error);
+    } finally {
+      setGeneratingImg(false);
+      setActiveEditorTab("");
+    }
   };
 
   return (
