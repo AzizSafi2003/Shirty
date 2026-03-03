@@ -1,11 +1,18 @@
 {
   "cSpell.words": [
+    "aipicker",
+    "colorpicker",
     "Customizer",
     "drei",
+    "filepicker",
     "glassmorphism",
     "GLTF",
     "maath",
     "threejs",
     "valtio"
-  ]
+  ],
+  "editor.formatOnSave": true,
+  "files.autoSave": "afterDelay",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "window.zoomLevel": 1
 }
