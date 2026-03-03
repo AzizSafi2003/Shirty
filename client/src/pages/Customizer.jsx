@@ -83,11 +83,20 @@ const Customizer = () => {
     });
   };
 
-  const readFile = (type) => {
-    reader(file).then((result) => {
+  const readFile = async (type) => {
+    if (!file) return;
+    try {
+      const result = await reader(file);
       handleDecals(type, result);
       setActiveEditorTab("");
-    });
+    } catch (error) {
+      console.error("Failed to read file", error);
+    }
+  };
+
+  const handleSubmit = async (type) => {
+    if (!prompt.trim()) return;
+    /* TODO: wire AI generation flow and call handleDecals(type, result) */
   };
 
   return (

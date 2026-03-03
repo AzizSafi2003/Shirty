@@ -8,7 +8,7 @@ const FilePicker = ({ file, setFile, readFile }) => {
           id="file-upload"
           type="file"
           accept="image/*"
-          onChange={(e) => setFile(e.target.files[0])}
+          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
         />
         <label
           htmlFor="file-upload"
@@ -18,7 +18,7 @@ const FilePicker = ({ file, setFile, readFile }) => {
         </label>
 
         <p className="mt-2 text-gray-500 text-xs truncate">
-          {file === "" ? "No file selected" : file.name}
+          + {file?.name ?? "No file selected "}+{" "}
         </p>
       </div>
 
