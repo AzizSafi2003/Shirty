@@ -44,6 +44,8 @@ An interactive 3D shirt customization web application that allows users to perso
 - Tailwind CSS
 - JavaScript
 - Three.js
+- Framer-motion
+- Valtio
 - Node.js
 - Express.js
 - OpenAI DALL·E API
