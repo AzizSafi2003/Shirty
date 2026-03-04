@@ -24,6 +24,8 @@ router.route("/").post(async (req, res) => {
       return res.status(400).json({ message: "Prompt is required" });
     }
 
+    console.log("Generating image for prompt:", prompt);
+
     const response = await Promise.race([
       openai.images.generate({
         prompt,
@@ -36,8 +38,11 @@ router.route("/").post(async (req, res) => {
       ),
     ]);
 
+    console.log("OpenAI response received:", response);
+
     const image = response?.data?.[0]?.b64_json;
     if (!image) {
+      console.error("No image in response:", response);
       return res
         .status(502)
         .json({ message: "No image returned from upstream" });
@@ -45,8 +50,8 @@ router.route("/").post(async (req, res) => {
 
     res.status(200).json({ photo: image });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Something went wrong" });
+    console.error("OpenAI Error:", error);
+    res.status(500).json({ message: error.message || "Something went wrong" });
   }
 });
 
