@@ -24,6 +24,8 @@ router.route("/").post(async (req, res) => {
       return res.status(400).json({ message: "Prompt is required" });
     }
 
+    console.info("Generating image", { promptLength: prompt.length });
+
     const response = await Promise.race([
       openai.images.generate({
         prompt,
@@ -36,8 +38,15 @@ router.route("/").post(async (req, res) => {
       ),
     ]);
 
+    console.info("OpenAI response received", {
+      images: Array.isArray(response?.data) ? response.data.length : 0,
+    });
+
     const image = response?.data?.[0]?.b64_json;
     if (!image) {
+      console.error("No image in OpenAI response", {
+        images: Array.isArray(response?.data) ? response.data.length : 0,
+      });
       return res
         .status(502)
         .json({ message: "No image returned from upstream" });
@@ -45,8 +54,28 @@ router.route("/").post(async (req, res) => {
 
     res.status(200).json({ photo: image });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Something went wrong" });
+    console.error("OpenAI Error", {
+      message: error?.message,
+      status: error?.status,
+    });
+    if (error?.message === "OpenAI request timed out") {
+      return res.status(504).json({
+        message: "Image generation timed out",
+        code: "UPSTREAM_TIMEOUT",
+      });
+    }
+
+    if (error?.status === 429) {
+      return res.status(429).json({
+        message: "AI generation is temporarily unavailable due to quota limits",
+        code: "UPSTREAM_QUOTA",
+      });
+    }
+
+    return res.status(502).json({
+      message: "Image generation failed",
+      code: "UPSTREAM_FAILURE",
+    });
   }
 });
 
