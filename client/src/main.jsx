@@ -1,17 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
 import { Toaster } from "react-hot-toast";
-import Preloader from "./components/Preloader";
 
 const Root = () => {
-  const [isLoading, setIsLoading] = useState(true);
-
   return (
     <React.StrictMode>
-      {isLoading && <Preloader onComplete={() => setIsLoading(false)} />}
-
       <App />
 
       <Toaster
