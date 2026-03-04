@@ -58,7 +58,24 @@ router.route("/").post(async (req, res) => {
       message: error?.message,
       status: error?.status,
     });
-    res.status(500).json({ message: "Image generation failed" });
+    if (error?.message === "OpenAI request timed out") {
+      return res.status(504).json({
+        message: "Image generation timed out",
+        code: "UPSTREAM_TIMEOUT",
+      });
+    }
+
+    if (error?.status === 429) {
+      return res.status(429).json({
+        message: "AI generation is temporarily unavailable due to quota limits",
+        code: "UPSTREAM_QUOTA",
+      });
+    }
+
+    return res.status(502).json({
+      message: "Image generation failed",
+      code: "UPSTREAM_FAILURE",
+    });
   }
 });
 
